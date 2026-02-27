@@ -1,0 +1,16 @@
+{
+  "enabled": true,
+  "name": "Ruff Format on Save",
+  "description": "Runs ruff format on any Python file saved in the backend directory",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "backend/**/*.py"
+    ]
+  },
+  "then": {
+    "type": "runCommand",
+    "command": "ruff format"
+  }
+}

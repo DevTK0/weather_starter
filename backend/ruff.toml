@@ -1,0 +1,15 @@
+line-length = 100
+
+[format]
+quote-style = "double"
+indent-style = "space"
+
+[lint]
+select = [
+  "E",    # pycodestyle errors
+  "F",    # pyflakes (unused imports, variables)
+  "I",    # isort (import ordering)
+  "UP",   # pyupgrade (modernise syntax)
+  "B",    # flake8-bugbear (common bugs)
+  "SIM",  # flake8-simplify
+]

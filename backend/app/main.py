@@ -42,4 +42,7 @@ app.include_router(locations_router, prefix="/api")
 
 @app.get("/health")
 def health_check():
-    return {"status": "healthy"}
+    con = sqlite3.connect(DB_PATH)
+    count = con.execute("SELECT COUNT(*) FROM locations").fetchone()[0]
+    con.close()
+    return {"status": "healthy", "location_count": count}

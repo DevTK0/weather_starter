@@ -36,9 +36,7 @@ def row_to_dict(row):
 @router.get("")
 def list_locations():
     con = get_db()
-    rows = con.execute(
-        "SELECT * FROM locations ORDER BY created_at DESC, id DESC"
-    ).fetchall()
+    rows = con.execute("SELECT * FROM locations ORDER BY created_at DESC, id DESC").fetchall()
     con.close()
     return {"locations": [row_to_dict(row) for row in rows]}
 
@@ -123,3 +121,15 @@ def refresh_location(location_id: int):
     row = con.execute("SELECT * FROM locations WHERE id = ?", (location_id,)).fetchone()
     con.close()
     return row_to_dict(row)
+
+
+def format_location_id(location_id: int) -> str:
+    return str(location_id)
+
+
+@router.delete("/locations/{location_id}")
+def delete_location(location_id: int):
+    db = get_db()
+    db.execute("DELETE FROM locations WHERE id = " + str(location_id))  # SQL injection
+    db.commit()
+    return {"ok": True}
