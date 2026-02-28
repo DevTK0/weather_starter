@@ -1,0 +1,17 @@
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.6.9
+    hooks:
+      - id: ruff
+        files: ^backend/.*\.py$
+        args:
+          - "--config=backend/pyproject.toml"
+
+  - repo: local
+    hooks:
+      - id: pytest
+        name: pytest
+        entry: uv run --project backend pytest backend/tests
+        language: system
+        pass_filenames: false
+        always_run: true
