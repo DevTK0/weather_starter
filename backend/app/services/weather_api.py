@@ -1,6 +1,11 @@
+import time
 from dataclasses import dataclass
 
 import httpx
+
+from app.logging_config import get_logger
+
+logger = get_logger("app.services.weather_api")
 
 
 class WeatherProviderError(Exception):
@@ -23,16 +28,38 @@ class SingaporeWeatherClient:
         if self.api_key:
             headers["x-api-key"] = self.api_key
 
+        url = f"{self.base_url}{self.two_hour_path}"
+        logger.info("weather_api_request", url=url)
+
+        start = time.perf_counter()
         with httpx.Client(timeout=self.timeout_seconds, headers=headers) as client:
-            return self._fetch_json(client, f"{self.base_url}{self.two_hour_path}")
+            result = self._fetch_json(client, url)
+        duration_ms = round((time.perf_counter() - start) * 1000, 2)
+
+        logger.info("weather_api_response", url=url, duration_ms=duration_ms)
+        return result
 
     def get_current_weather(self, latitude: float, longitude: float) -> dict:
+        logger.info(
+            "get_current_weather_called",
+            latitude=latitude,
+            longitude=longitude,
+        )
         payload = self.fetch_latest_forecast_payload()
-        return self.snapshot_from_payload(payload, latitude, longitude)
+        snapshot = self.snapshot_from_payload(payload, latitude, longitude)
+        logger.info(
+            "get_current_weather_result",
+            latitude=latitude,
+            longitude=longitude,
+            condition=snapshot.get("condition"),
+            area=snapshot.get("area"),
+        )
+        return snapshot
 
     def snapshot_from_payload(self, payload: dict, latitude: float, longitude: float) -> dict:
         if isinstance(payload, dict) and payload.get("code") not in (None, 0):
             message = payload.get("errorMsg") or "Weather provider returned an error"
+            logger.error("weather_provider_error_code", message=message)
             raise WeatherProviderError(message)
 
         data = payload.get("data") if isinstance(payload, dict) else None
@@ -41,11 +68,13 @@ class SingaporeWeatherClient:
         area_metadata = root.get("area_metadata", [])
         items = root.get("items", [])
         if not items:
+            logger.error("weather_no_items_in_response")
             raise WeatherProviderError("Forecast response has no items")
 
         latest_item = items[0]
         forecasts = latest_item.get("forecasts", [])
         if not forecasts:
+            logger.error("weather_no_forecasts_in_item")
             raise WeatherProviderError("Forecast item has no area forecasts")
 
         forecast_by_area = {
@@ -81,6 +110,11 @@ class SingaporeWeatherClient:
             return response.json()
         except httpx.HTTPStatusError as exc:
             status_code = exc.response.status_code
+            logger.error(
+                "weather_api_http_error",
+                url=url,
+                http_status=status_code,
+            )
             if status_code == 429:
                 raise WeatherProviderError(
                     "Weather provider rate limit reached (HTTP 429)"
@@ -91,6 +125,11 @@ class SingaporeWeatherClient:
                 ) from exc
             raise WeatherProviderError(f"Weather provider returned HTTP {status_code}") from exc
         except httpx.HTTPError as exc:
+            logger.error(
+                "weather_api_connection_error",
+                url=url,
+                error=str(exc),
+            )
             raise WeatherProviderError("Unable to reach weather provider") from exc
 
     @staticmethod

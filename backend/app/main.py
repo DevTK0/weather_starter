@@ -3,7 +3,13 @@ import sqlite3
 
 from fastapi import FastAPI
 
+from app.logging_config import get_logger, setup_logging
+from app.middleware.logging_middleware import RequestLoggingMiddleware
 from app.routers.locations import router as locations_router
+
+# Initialise structured logging before anything else
+setup_logging()
+logger = get_logger("app.main")
 
 DB_PATH = os.getenv("DATABASE_PATH", "weather.db")
 
@@ -27,6 +33,7 @@ def init_db():
     """)
     con.commit()
     con.close()
+    logger.info("database_initialised", db_path=DB_PATH)
 
 
 init_db()
@@ -37,6 +44,7 @@ app = FastAPI(
     version="0.1.0",
 )
 
+app.add_middleware(RequestLoggingMiddleware)
 app.include_router(locations_router, prefix="/api")
 
 
