@@ -1,37 +1,28 @@
 import { useState } from 'react';
-import { useCreateLocation } from '../hooks/useLocations';
+import { useCreateLocation } from '../hooks/useLocations.jsx';
 
 export function LocationForm() {
-  const [name, setName] = useState('');
   const [latitude, setLatitude] = useState('');
   const [longitude, setLongitude] = useState('');
-  const createLocation = useCreateLocation();
+  const { create, isPending, error } = useCreateLocation();
 
   const onSubmit = async (event) => {
     event.preventDefault();
-    await createLocation.mutateAsync({
-      name,
-      latitude: Number(latitude),
-      longitude: Number(longitude),
-    });
-    setName('');
-    setLatitude('');
-    setLongitude('');
+    try {
+      await create({
+        latitude: Number(latitude),
+        longitude: Number(longitude),
+      });
+      setLatitude('');
+      setLongitude('');
+    } catch {
+      // error is already captured in hook state
+    }
   };
 
   return (
     <form onSubmit={onSubmit} className="grid gap-3 rounded-lg bg-white p-4 shadow-sm">
       <h2 className="text-lg font-semibold">Add Location</h2>
-      <label className="grid gap-1">
-        <span className="text-sm font-medium">Name</span>
-        <input
-          value={name}
-          onChange={(event) => setName(event.target.value)}
-          className="rounded border border-slate-300 px-3 py-2"
-          placeholder="Bishan"
-          required
-        />
-      </label>
 
       <div className="grid grid-cols-2 gap-3">
         <label className="grid gap-1">
@@ -63,14 +54,14 @@ export function LocationForm() {
 
       <button
         type="submit"
-        disabled={createLocation.isPending}
+        disabled={isPending}
         className="rounded bg-sky-500 px-4 py-2 font-medium text-white hover:bg-sky-700 disabled:opacity-60"
       >
-        {createLocation.isPending ? 'Adding...' : 'Add Location'}
+        {isPending ? 'Adding...' : 'Add Location'}
       </button>
 
-      {createLocation.error && (
-        <p className="text-sm text-red-600">{createLocation.error.message}</p>
+      {error && (
+        <p className="text-sm text-red-600">{error.message}</p>
       )}
     </form>
   );

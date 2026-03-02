@@ -1,4 +1,4 @@
-import { request } from '../../../lib/api';
+import { request } from './client';
 
 export async function listLocations() {
   return request('/locations');
