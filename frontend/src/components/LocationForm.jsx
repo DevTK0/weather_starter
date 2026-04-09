@@ -1,5 +1,8 @@
 import { useState } from 'react';
 import { useCreateLocation } from '../hooks/useLocations.jsx';
+import { createLogger } from '../utils/logger';
+
+const logger = createLogger('components.LocationForm');
 
 export function LocationForm() {
   const [latitude, setLatitude] = useState('');
@@ -8,6 +11,10 @@ export function LocationForm() {
 
   const onSubmit = async (event) => {
     event.preventDefault();
+    logger.info('form_submitted', {
+      latitude: Number(latitude),
+      longitude: Number(longitude),
+    });
     try {
       await create({
         latitude: Number(latitude),

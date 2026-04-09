@@ -1,5 +1,8 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { listLocations, createLocation as apiCreateLocation, refreshLocation as apiRefreshLocation } from '../api/locations';
+import { createLogger } from '../utils/logger';
+
+const logger = createLogger('hooks.useLocations');
 
 const LocationsContext = createContext(null);
 
@@ -13,8 +16,10 @@ export function LocationsProvider({ children }) {
       const data = await listLocations();
       setLocations(data.locations);
       setError(null);
+      logger.info('locations_loaded', { count: data.locations.length });
     } catch (err) {
       setError(err);
+      logger.error('locations_load_failed', { error: err.message });
     } finally {
       setIsLoading(false);
     }
@@ -43,8 +48,16 @@ export function useCreateLocation() {
   const create = async (payload) => {
     setIsPending(true);
     setError(null);
+    logger.info('location_create_started', {
+      latitude: payload.latitude,
+      longitude: payload.longitude,
+    });
     try {
       await apiCreateLocation(payload);
+      logger.info('location_created', {
+        latitude: payload.latitude,
+        longitude: payload.longitude,
+      });
       await reload();
     } catch (err) {
       setError(err);
@@ -67,11 +80,14 @@ export function useRefreshLocation() {
     setIsPending(true);
     setRefreshingId(locationId);
     setError(null);
+    logger.info('refresh_started', { location_id: locationId });
     try {
       await apiRefreshLocation(locationId);
+      logger.info('refresh_completed', { location_id: locationId });
       await reload();
     } catch (err) {
       setError(err);
+      logger.error('refresh_failed', { location_id: locationId, error: err.message });
     } finally {
       setIsPending(false);
       setRefreshingId(null);

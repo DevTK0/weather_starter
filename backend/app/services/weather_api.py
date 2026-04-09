@@ -1,6 +1,10 @@
+import time
 from dataclasses import dataclass
 
 import httpx
+import structlog
+
+logger = structlog.get_logger()
 
 
 class WeatherProviderError(Exception):
@@ -23,16 +27,33 @@ class SingaporeWeatherClient:
         if self.api_key:
             headers["x-api-key"] = self.api_key
 
+        url = f"{self.base_url}{self.two_hour_path}"
+        start = time.perf_counter()
         with httpx.Client(timeout=self.timeout_seconds, headers=headers) as client:
-            return self._fetch_json(client, f"{self.base_url}{self.two_hour_path}")
+            try:
+                result = self._fetch_json(client, url)
+                duration_ms = round((time.perf_counter() - start) * 1000, 2)
+                logger.info(
+                    "weather_api_request",
+                    url=url,
+                    status_code=200,
+                    duration_ms=duration_ms,
+                )
+                return result
+            except WeatherProviderError:
+                duration_ms = round((time.perf_counter() - start) * 1000, 2)
+                logger.error(
+                    "weather_api_request_failed",
+                    url=url,
+                    duration_ms=duration_ms,
+                )
+                raise
 
     def get_current_weather(self, latitude: float, longitude: float) -> dict:
         payload = self.fetch_latest_forecast_payload()
         return self.snapshot_from_payload(payload, latitude, longitude)
 
-    def snapshot_from_payload(
-        self, payload: dict, latitude: float, longitude: float
-    ) -> dict:
+    def snapshot_from_payload(self, payload: dict, latitude: float, longitude: float) -> dict:
         if isinstance(payload, dict) and payload.get("code") not in (None, 0):
             message = payload.get("errorMsg") or "Weather provider returned an error"
             raise WeatherProviderError(message)

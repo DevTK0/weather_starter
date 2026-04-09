@@ -1,4 +1,7 @@
 import { useLocations, useRefreshLocation } from '../hooks/useLocations.jsx';
+import { createLogger } from '../utils/logger';
+
+const logger = createLogger('components.LocationList');
 
 export function LocationList() {
   const { locations, isLoading, error } = useLocations();
@@ -48,7 +51,10 @@ export function LocationList() {
           <p className="mt-2 text-xs text-slate-500">Source: {location.weather.source}</p>
           <div className="mt-3">
             <button
-              onClick={() => refresh(location.id)}
+              onClick={() => {
+                logger.info('refresh_clicked', { location_id: location.id });
+                refresh(location.id);
+              }}
               disabled={isPending}
               className="rounded bg-sky-500 px-3 py-1 text-sm font-medium text-white hover:bg-sky-700 disabled:opacity-60"
             >

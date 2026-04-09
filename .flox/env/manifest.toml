@@ -1,7 +1,8 @@
-version = 1
+schema-version = "1.11.0"
 
 [install]
 nodejs.pkg-path = "nodejs"
+nodejs.outputs = "all"
 uv.pkg-path = "uv"
 
 [vars]

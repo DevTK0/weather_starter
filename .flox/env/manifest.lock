@@ -1,10 +1,11 @@
 {
   "lockfile-version": 1,
   "manifest": {
-    "version": 1,
+    "schema-version": "1.11.0",
     "install": {
       "nodejs": {
-        "pkg-path": "nodejs"
+        "pkg-path": "nodejs",
+        "outputs": "all"
       },
       "uv": {
         "pkg-path": "uv"
