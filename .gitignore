@@ -1,0 +1,39 @@
+# macOS
+.DS_Store
+
+# Local env files
+.env
+.env.*
+!.env.example
+!.env.local.example
+
+# Local data artifacts
+backend/data/
+backend/*.db
+backend/*.db-shm
+backend/*.db-wal
+
+# Node / Vite
+node_modules/
+dist/
+.vite/
+
+# Astro / Starlight
+docs/.astro/
+docs/dist/
+
+# Logs
+backend/logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Editors
+.vscode/
+.idea/
+.claude/
+.mise.toml
+.mise.local.toml
+*.swp
+*.swo
