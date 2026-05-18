@@ -18,6 +18,15 @@ body {
   background-repeat: no-repeat;
 }
 
+[data-theme='hotpink'] body {
+  background:
+    radial-gradient(120% 80% at 70% 0%, rgba(255, 255, 255, 0.22) 0%, transparent 50%),
+    radial-gradient(90% 70% at 10% 100%, rgba(200, 0, 100, 0.55) 0%, transparent 60%),
+    linear-gradient(170deg, #ff2d78 0%, #e0006a 30%, #b8005a 60%, #8b0045 100%);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+}
+
 button,
 input {
   @apply transition;
