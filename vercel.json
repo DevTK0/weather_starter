@@ -1,4 +1,17 @@
 {
+  "experimentalServices": {
+    "frontend": {
+      "entrypoint": ".",
+      "framework": "vite",
+      "routePrefix": "/"
+    },
+    "backend": {
+      "entrypoint": "api",
+      "framework": "node",
+      "routePrefix": "/_/backend",
+      "includeFiles": ["server/**"]
+    }
+  },
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "rewrites": [
