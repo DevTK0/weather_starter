@@ -20,6 +20,11 @@ export const themes: Record<string, ThemeDefinition> = {
     label: 'Power Red',
     description: 'Mighty Morphin red — bold crimson with a dark battle-ready edge.',
   },
+  junglegreen: {
+    id: 'junglegreen',
+    label: 'Jungle Green',
+    description: 'Deep canopy greens with a lush, shadowy forest atmosphere.',
+  },
 };
 
 export type ThemeId = keyof typeof themes;

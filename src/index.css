@@ -42,6 +42,15 @@ body {
 [data-theme='hotpink'] .text-white\/50 { color: rgb(0 0 0 / 0.50) !important; }
 [data-theme='hotpink'] .text-white\/40 { color: rgb(0 0 0 / 0.40) !important; }
 
+[data-theme='junglegreen'] body {
+  background:
+    radial-gradient(120% 80% at 70% 0%, rgba(180, 255, 180, 0.15) 0%, transparent 50%),
+    radial-gradient(80% 60% at 5% 100%, rgba(0, 60, 10, 0.75) 0%, transparent 60%),
+    linear-gradient(170deg, #2d6a2f 0%, #1e4d20 30%, #143516 65%, #0a1f0b 100%);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+}
+
 [data-theme='powerred'] body {
   background:
     radial-gradient(120% 80% at 65% 0%, rgba(255, 180, 180, 0.20) 0%, transparent 50%),
