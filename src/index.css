@@ -42,6 +42,15 @@ body {
 [data-theme='hotpink'] .text-white\/50 { color: rgb(0 0 0 / 0.50) !important; }
 [data-theme='hotpink'] .text-white\/40 { color: rgb(0 0 0 / 0.40) !important; }
 
+[data-theme='powerred'] body {
+  background:
+    radial-gradient(120% 80% at 65% 0%, rgba(255, 180, 180, 0.20) 0%, transparent 50%),
+    radial-gradient(80% 60% at 5% 100%, rgba(120, 0, 0, 0.70) 0%, transparent 60%),
+    linear-gradient(170deg, #c0181e 0%, #9b1010 30%, #6e0a0a 65%, #3d0404 100%);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+}
+
 button,
 input {
   @apply transition;
