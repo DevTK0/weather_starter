@@ -52,7 +52,7 @@ export async function createApp(options: AppOptions = {}) {
 
   if (serveFrontend) {
     if (process.env.NODE_ENV === 'production') {
-      const staticPath = resolve(__dirname, '..', '..', 'frontend', 'dist');
+      const staticPath = resolve(__dirname, '..', '..', 'dist');
       app.use(express.static(staticPath));
       app.get('*', (_request, response) => {
         response.sendFile(resolve(staticPath, 'index.html'));
@@ -60,7 +60,7 @@ export async function createApp(options: AppOptions = {}) {
     } else {
       const { createServer } = await import('vite');
       const vite = await createServer({
-        root: resolve(__dirname, '..', '..', 'frontend'),
+        root: resolve(__dirname, '..', '..'),
         server: { middlewareMode: true },
         appType: 'spa',
       });

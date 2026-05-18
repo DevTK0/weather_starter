@@ -24,7 +24,7 @@ flowchart LR
     C -->|External API| E["data.gov.sg API<br/>api-open.data.gov.sg"]
 ```
 
-The backend and frontend run as one Node process in development. Express serves `/api/*`, and Vite middleware serves the React app. In Vercel, root-level `api/` functions expose the same `/api/*` contract and `frontend/dist` serves the React app. The frontend uses relative `/api` requests, so there is no frontend/backend port configuration.
+The backend and frontend run as one Node process in development. Express serves `/api/*`, and Vite middleware serves the React app. In Vercel, root-level `api/` functions expose the same `/api/*` contract and `dist` serves the React app. The frontend uses relative `/api` requests, so there is no frontend/backend port configuration.
 
 ## Quick Start
 
@@ -74,7 +74,7 @@ Copy `.env.example` to `.env` for local development. The deployment env contract
 
 For a single Vercel project deployment, set `DATABASE_URL`,
 `DATABASE_AUTH_TOKEN`, and `WEATHER_API_KEY` as project environment variables.
-The included `vercel.json` builds the Vite frontend, serves `frontend/dist`,
+The included `vercel.json` builds the Vite frontend, serves `dist`,
 and leaves `/api/*` requests to the Vercel API route files.
 For tests and fallback local development, `DATABASE_URL` can also point at a
 local libSQL file URL such as `file:./backend/weather.db`. `npm run reset`
@@ -137,19 +137,17 @@ weather-starter/
 │       └── routes/
 │           ├── locations.ts           # Location endpoints
 │           └── locations.test.ts      # Location API tests
-├── frontend/
-│   ├── index.html
-│   ├── package.json
-│   ├── postcss.config.js
-│   ├── tailwind.config.js
-│   ├── vite.config.ts
-│   └── src/
-│       ├── main.tsx
-│       ├── App.tsx
-│       ├── api.ts
-│       ├── state/
-│       ├── components/
-│       └── index.css
+├── index.html
+├── postcss.config.js
+├── tailwind.config.js
+├── vite.config.ts
+├── src/
+│   ├── main.tsx
+│   ├── App.tsx
+│   ├── api.ts
+│   ├── state/
+│   ├── components/
+│   └── index.css
 ├── scripts/
 │   ├── dev.mjs
 │   ├── start.mjs
