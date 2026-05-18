@@ -40,3 +40,5 @@ pnpm-debug.log*
 .mise.local.toml
 *.swp
 *.swo
+.vercel
+.env*.local
