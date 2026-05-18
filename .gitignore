@@ -8,10 +8,10 @@
 !.env.local.example
 
 # Local data artifacts
-backend/data/
-backend/*.db
-backend/*.db-shm
-backend/*.db-wal
+server/data/
+server/*.db
+server/*.db-shm
+server/*.db-wal
 
 # Node / Vite
 node_modules/
@@ -23,7 +23,7 @@ docs/.astro/
 docs/dist/
 
 # Logs
-backend/logs/
+server/logs/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*

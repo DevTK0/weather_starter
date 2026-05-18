@@ -1,3 +1,3 @@
-import { createLocationsIndexHandler } from '../../backend/src/vercel-routes.js';
+import { createLocationsIndexHandler } from '../../server/src/vercel-routes.js';
 
 export default createLocationsIndexHandler();

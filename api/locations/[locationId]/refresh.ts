@@ -1,3 +1,3 @@
-import { createLocationRefreshHandler } from '../../../backend/src/vercel-routes.js';
+import { createLocationRefreshHandler } from '../../../server/src/vercel-routes.js';
 
 export default createLocationRefreshHandler();

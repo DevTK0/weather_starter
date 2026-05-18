@@ -6,7 +6,7 @@
   "scripts": {
     "prepare": "husky",
     "dev": "node scripts/dev.mjs",
-    "build": "tsc -p tsconfig.json && vite build && tsc -p backend/tsconfig.json && tsc -p tsconfig.api.json",
+    "build": "tsc -p tsconfig.json && vite build && tsc -p server/tsconfig.json && tsc -p tsconfig.api.json",
     "preview": "vite preview",
     "start": "node scripts/start.mjs",
     "doctor": "node scripts/doctor.mjs",

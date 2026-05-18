@@ -1,3 +1,3 @@
-import { createLogsHandler } from '../backend/src/vercel-routes.js';
+import { createLogsHandler } from '../server/src/vercel-routes.js';
 
 export default createLogsHandler();

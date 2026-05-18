@@ -45,7 +45,7 @@ const client = createClient({
 });
 const db = drizzle(client, { schema: { locations } });
 
-await migrate(db, { migrationsFolder: join(process.cwd(), 'backend', 'drizzle') });
+await migrate(db, { migrationsFolder: join(process.cwd(), 'server', 'drizzle') });
 
 export async function listLocations(): Promise<LocationRecord[]> {
   return (
@@ -166,7 +166,7 @@ function resolveDatabaseUrl(): string {
     return configuredUrl;
   }
 
-  const fallbackPath = join(process.cwd(), 'backend', 'weather.db');
+  const fallbackPath = join(process.cwd(), 'server', 'weather.db');
   mkdirSync(dirname(fallbackPath), { recursive: true });
   return `file:${fallbackPath}`;
 }

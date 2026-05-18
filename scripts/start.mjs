@@ -4,7 +4,7 @@ const nodeOptions = [process.env.NODE_OPTIONS, '--disable-warning=ExperimentalWa
   .filter(Boolean)
   .join(' ');
 
-const child = spawn('node', ['backend/dist/server.js'], {
+const child = spawn('node', ['server/dist/server.js'], {
   stdio: 'inherit',
   env: {
     ...process.env,

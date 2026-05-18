@@ -2,7 +2,7 @@
 
 A minimal TypeScript weather app starter project for agentic coding.
 
-The app tracks Singapore locations and stores the latest weather snapshot for each one. It uses thin Vercel API route handlers for deployment, a local Node/Express backend for development, a React/Vite frontend, Turso/libSQL-compatible storage, and Portless for a stable local `.localhost` URL.
+The app tracks Singapore locations and stores the latest weather snapshot for each one. It uses thin Vercel API route handlers for deployment, a local Node/Express server for development, a React/Vite frontend, Turso/libSQL-compatible storage, and Portless for a stable local `.localhost` URL.
 
 ## Tech Stack
 
@@ -24,7 +24,7 @@ flowchart LR
     C -->|External API| E["data.gov.sg API<br/>api-open.data.gov.sg"]
 ```
 
-The backend and frontend run as one Node process in development. Express serves `/api/*`, and Vite middleware serves the React app. In Vercel, root-level `api/` functions expose the same `/api/*` contract and `dist` serves the React app. The frontend uses relative `/api` requests, so there is no frontend/backend port configuration.
+The local server and frontend run as one Node process in development. Express serves `/api/*`, and Vite middleware serves the React app. In Vercel, root-level `api/` functions expose the same `/api/*` contract and `dist` serves the React app. The frontend uses relative `/api` requests, so there is no frontend/backend port configuration.
 
 ## Quick Start
 
@@ -50,10 +50,10 @@ http://weather-starter.localhost:1355
 
 ```bash
 npm run dev      # Start Express + Vite through Portless
-npm run build    # Build the frontend and compile backend TypeScript
+npm run build    # Build the frontend and compile server/API TypeScript
 npm run start    # Run the compiled production server
-npm test         # Run backend API tests
-npm run test:watch # Run backend API tests in watch mode
+npm test         # Run server/API tests
+npm run test:watch # Run server/API tests in watch mode
 npm run doctor   # Verify /health and /api/locations
 npm run reset    # Remove the local file: database, if DATABASE_URL points to one
 npm run db:generate # Generate Drizzle migrations after schema changes
@@ -77,7 +77,7 @@ For a single Vercel project deployment, set `DATABASE_URL`,
 The included `vercel.json` builds the Vite frontend, serves `dist`,
 and leaves `/api/*` requests to the Vercel API route files.
 For tests and fallback local development, `DATABASE_URL` can also point at a
-local libSQL file URL such as `file:./backend/weather.db`. `npm run reset`
+local libSQL file URL such as `file:./server/weather.db`. `npm run reset`
 only removes file-backed databases and refuses remote Turso URLs.
 
 ## API
@@ -112,7 +112,7 @@ curl -s -X POST http://weather-starter.localhost:1355/api/locations/1/refresh
 The app does not call the external weather API on every page load. It uses a snapshot pattern:
 
 1. Creating a location saves coordinates locally with a placeholder weather status.
-2. The backend immediately refreshes that new location from data.gov.sg, writes the latest snapshot, and returns the updated location.
+2. The server immediately refreshes that new location from data.gov.sg, writes the latest snapshot, and returns the updated location.
 3. Listing locations reads from the configured libSQL database through Drizzle ORM.
 4. Manual refresh calls data.gov.sg again, writes the latest snapshot back to the local store, and returns the updated location.
 
@@ -121,9 +121,8 @@ The app does not call the external weather API on every page load. It uses a sna
 ```text
 weather-starter/
 ├── api/                              # Vercel API route handlers
-├── backend/
+├── server/
 │   ├── drizzle/                       # Generated Drizzle SQL migrations
-│   ├── package.json
 │   ├── tsconfig.json
 │   └── src/
 │       ├── server.ts                  # Local Express app + Vite middleware

@@ -6,7 +6,7 @@ const nodeOptions = [process.env.NODE_OPTIONS, '--disable-warning=ExperimentalWa
 
 const child = spawn(
   'portless',
-  ['run', '--name', 'weather-starter', 'tsx', 'watch', 'backend/src/server.ts'],
+  ['run', '--name', 'weather-starter', 'tsx', 'watch', 'server/src/server.ts'],
   {
     stdio: 'inherit',
     env: {

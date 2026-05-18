@@ -2,7 +2,7 @@ import { mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 import pino from 'pino';
 
-const logPath = process.env.LOG_FILE_PATH ?? join(process.cwd(), 'backend', 'logs', 'app.log');
+const logPath = process.env.LOG_FILE_PATH ?? join(process.cwd(), 'server', 'logs', 'app.log');
 
 if (process.env.NODE_ENV !== 'test') {
   mkdirSync(join(logPath, '..'), { recursive: true });
