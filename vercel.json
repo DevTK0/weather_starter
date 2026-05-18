@@ -6,9 +6,9 @@
       "routePrefix": "/"
     },
     "backend": {
-      "entrypoint": "api",
-      "framework": "node",
-      "routePrefix": "/_/backend",
+      "entrypoint": "api/index.ts",
+      "framework": "express",
+      "routePrefix": "/api",
       "includeFiles": ["server/**"]
     }
   },
