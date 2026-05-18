@@ -2,13 +2,13 @@
 
 A minimal TypeScript weather app starter project for agentic coding.
 
-The app tracks Singapore locations and stores the latest weather snapshot for each one. It uses a Node/Express backend, a React/Vite frontend, Turso/libSQL-compatible storage, and Portless for a stable local `.localhost` URL.
+The app tracks Singapore locations and stores the latest weather snapshot for each one. It uses thin Vercel API route handlers for deployment, a local Node/Express backend for development, a React/Vite frontend, Turso/libSQL-compatible storage, and Portless for a stable local `.localhost` URL.
 
 ## Tech Stack
 
 | Layer        | Tools                                                                 |
 | ------------ | --------------------------------------------------------------------- |
-| Backend      | Node.js, TypeScript, Express                                          |
+| Backend      | Node.js, TypeScript, Express locally, Vercel API routes for deploy     |
 | Frontend     | React 18, Vite, Tailwind CSS                                          |
 | Dev URL      | Portless named `.localhost` URLs                                      |
 | External API | Singapore data.gov.sg (`api-open.data.gov.sg`)                        |
@@ -24,7 +24,7 @@ flowchart LR
     C -->|External API| E["data.gov.sg API<br/>api-open.data.gov.sg"]
 ```
 
-The backend and frontend run as one Node process in development. Express serves `/api/*`, and Vite middleware serves the React app. The frontend uses relative `/api` requests, so there is no frontend/backend port configuration.
+The backend and frontend run as one Node process in development. Express serves `/api/*`, and Vite middleware serves the React app. In Vercel, root-level `api/` functions expose the same `/api/*` contract and `frontend/dist` serves the React app. The frontend uses relative `/api` requests, so there is no frontend/backend port configuration.
 
 ## Quick Start
 
@@ -74,6 +74,8 @@ Copy `.env.example` to `.env` for local development. The deployment env contract
 
 For a single Vercel project deployment, set `DATABASE_URL`,
 `DATABASE_AUTH_TOKEN`, and `WEATHER_API_KEY` as project environment variables.
+The included `vercel.json` builds the Vite frontend, serves `frontend/dist`,
+and leaves `/api/*` requests to the Vercel API route files.
 For tests and fallback local development, `DATABASE_URL` can also point at a
 local libSQL file URL such as `file:./backend/weather.db`. `npm run reset`
 only removes file-backed databases and refuses remote Turso URLs.
@@ -86,7 +88,10 @@ only removes file-backed databases and refuses remote Turso URLs.
 | `GET`  | `/api/locations`             | List all locations             |
 | `POST` | `/api/locations`             | Create a location              |
 | `GET`  | `/api/locations/:id`         | Get a single location          |
+| `DELETE` | `/api/locations/:id`       | Delete a location              |
 | `POST` | `/api/locations/:id/refresh` | Refresh weather for a location |
+| `GET`  | `/api/forecast-areas`        | List Singapore forecast areas  |
+| `POST` | `/api/logs`                  | Accept frontend interaction logs |
 
 Create a location:
 
@@ -115,12 +120,16 @@ The app does not call the external weather API on every page load. It uses a sna
 
 ```text
 weather-starter/
+├── api/                              # Vercel API route handlers
 ├── backend/
 │   ├── drizzle/                       # Generated Drizzle SQL migrations
 │   ├── package.json
 │   ├── tsconfig.json
 │   └── src/
-│       ├── server.ts                  # Express app + Vite middleware
+│       ├── server.ts                  # Local Express app + Vite middleware
+│       ├── api-service.ts             # Shared endpoint behavior
+│       ├── vercel-routes.ts           # Vercel handler factories
+│       ├── vercel-handler.ts          # Vercel request/response adapter
 │       ├── db.ts                      # libSQL connection and data access helpers
 │       ├── logger.ts                  # Structured app logger
 │       ├── schema.ts                  # Drizzle table definitions

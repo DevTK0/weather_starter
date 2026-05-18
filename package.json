@@ -6,7 +6,7 @@
   "scripts": {
     "prepare": "husky",
     "dev": "node scripts/dev.mjs",
-    "build": "npm run build -w frontend && tsc -p backend/tsconfig.json",
+    "build": "npm run build -w frontend && tsc -p backend/tsconfig.json && tsc -p tsconfig.api.json",
     "start": "node scripts/start.mjs",
     "doctor": "node scripts/doctor.mjs",
     "reset": "node scripts/reset.mjs",
@@ -35,6 +35,7 @@
     "@types/leaflet": "^1.9.21",
     "@types/node": "^22.10.2",
     "@types/supertest": "^7.2.0",
+    "@vercel/node": "^5.5.12",
     "drizzle-kit": "^0.31.10",
     "eslint": "^9.39.4",
     "eslint-config-prettier": "^10.1.8",

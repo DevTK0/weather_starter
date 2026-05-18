@@ -3,12 +3,13 @@ import express from 'express';
 import pinoHttpModule from 'pino-http';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { createLocationsRouter, type WeatherClient } from './routes/locations.js';
+import { createLocationsRouter } from './routes/locations.js';
+import { createWeatherApi, type WeatherClient } from './api-service.js';
+import { sendExpressResult } from './http-result.js';
 import { logger } from './logger.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const pinoHttp = pinoHttpModule.default ?? pinoHttpModule;
-const FRONTEND_EVENT_PATTERN = /^[a-z][a-z0-9_.:-]{1,63}$/;
 
 interface AppOptions {
   serveFrontend?: boolean;
@@ -38,23 +39,13 @@ export async function createApp(options: AppOptions = {}) {
     response.json({ status: 'healthy' });
   });
 
-  app.post('/api/logs', (request, response) => {
-    const event = request.body?.event;
-    const metadata = request.body?.metadata;
-    if (typeof event !== 'string' || !FRONTEND_EVENT_PATTERN.test(event)) {
-      response.status(422).json({ detail: 'event is required' });
-      return;
+  app.post('/api/logs', async (request, response, next) => {
+    try {
+      const weatherApi = createWeatherApi({ weatherClient: options.weatherClient });
+      sendExpressResult(response, await weatherApi.logFrontendEvent(request.body));
+    } catch (error) {
+      next(error);
     }
-    logger.info(
-      {
-        source: 'frontend',
-        event,
-        metadata: metadata && typeof metadata === 'object' ? metadata : undefined,
-        page: typeof request.body?.page === 'string' ? request.body.page : undefined,
-      },
-      'frontend interaction',
-    );
-    response.status(204).end();
   });
 
   app.use('/api', createLocationsRouter({ weatherClient: options.weatherClient }));
