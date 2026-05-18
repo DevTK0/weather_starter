@@ -20,6 +20,7 @@
     "backend"
   ],
   "dependencies": {
+    "@libsql/client": "^0.17.3",
     "@vitejs/plugin-react": "^5.1.4",
     "dotenv": "^17.4.2",
     "drizzle-orm": "^0.45.2",

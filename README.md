@@ -2,7 +2,7 @@
 
 A minimal TypeScript weather app starter project for agentic coding.
 
-The app tracks Singapore locations and stores the latest weather snapshot for each one. It uses a Node/Express backend, a React/Vite frontend, and Portless for a stable local `.localhost` URL.
+The app tracks Singapore locations and stores the latest weather snapshot for each one. It uses a Node/Express backend, a React/Vite frontend, Turso/libSQL-compatible storage, and Portless for a stable local `.localhost` URL.
 
 ## Tech Stack
 
@@ -12,7 +12,7 @@ The app tracks Singapore locations and stores the latest weather snapshot for ea
 | Frontend     | React 18, Vite, Tailwind CSS                                          |
 | Dev URL      | Portless named `.localhost` URLs                                      |
 | External API | Singapore data.gov.sg (`api-open.data.gov.sg`)                        |
-| Storage      | SQLite database at `backend/weather.db`, accessed through Drizzle ORM |
+| Storage      | Turso/libSQL-compatible database, accessed through Drizzle ORM          |
 
 ## Architecture
 
@@ -20,7 +20,7 @@ The app tracks Singapore locations and stores the latest weather snapshot for ea
 flowchart LR
     A["Browser<br/>http://weather-starter.localhost:1355"] --> B["Portless proxy"]
     B --> C["Express + Vite middleware<br/>random local PORT"]
-    C --> D["SQLite database<br/>backend/weather.db"]
+    C --> D["Turso/libSQL database<br/>DATABASE_URL"]
     C -->|External API| E["data.gov.sg API<br/>api-open.data.gov.sg"]
 ```
 
@@ -55,9 +55,9 @@ npm run start    # Run the compiled production server
 npm test         # Run backend API tests
 npm run test:watch # Run backend API tests in watch mode
 npm run doctor   # Verify /health and /api/locations
-npm run reset    # Remove the local SQLite database
+npm run reset    # Remove the local file: database, if DATABASE_URL points to one
 npm run db:generate # Generate Drizzle migrations after schema changes
-npm run db:migrate  # Apply Drizzle migrations to backend/weather.db
+npm run db:migrate  # Apply Drizzle migrations through DATABASE_URL
 ```
 
 ## Configuration
@@ -74,9 +74,9 @@ Copy `.env.example` to `.env` for local development. The deployment env contract
 
 For a single Vercel project deployment, set `DATABASE_URL`,
 `DATABASE_AUTH_TOKEN`, and `WEATHER_API_KEY` as project environment variables.
-The current local backend still uses the SQLite file until the Turso storage
-slice is implemented, but these names are the shared contract for the upcoming
-serverless backend.
+For tests and fallback local development, `DATABASE_URL` can also point at a
+local libSQL file URL such as `file:./backend/weather.db`. `npm run reset`
+only removes file-backed databases and refuses remote Turso URLs.
 
 ## API
 
@@ -108,7 +108,7 @@ The app does not call the external weather API on every page load. It uses a sna
 
 1. Creating a location saves coordinates locally with a placeholder weather status.
 2. The backend immediately refreshes that new location from data.gov.sg, writes the latest snapshot, and returns the updated location.
-3. Listing locations reads from `backend/weather.db` through Drizzle ORM.
+3. Listing locations reads from the configured libSQL database through Drizzle ORM.
 4. Manual refresh calls data.gov.sg again, writes the latest snapshot back to the local store, and returns the updated location.
 
 ## Project Structure
@@ -121,7 +121,7 @@ weather-starter/
 │   ├── tsconfig.json
 │   └── src/
 │       ├── server.ts                  # Express app + Vite middleware
-│       ├── db.ts                      # SQLite connection and data access helpers
+│       ├── db.ts                      # libSQL connection and data access helpers
 │       ├── logger.ts                  # Structured app logger
 │       ├── schema.ts                  # Drizzle table definitions
 │       ├── weather.ts                 # Singapore weather API client

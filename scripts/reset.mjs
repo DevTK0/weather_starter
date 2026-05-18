@@ -1,8 +1,14 @@
+import 'dotenv/config';
 import { rm } from 'node:fs/promises';
 
-const databasePath = process.env.DATABASE_PATH
-  ? new URL(process.env.DATABASE_PATH, `file://${process.cwd()}/`)
-  : new URL('../backend/weather.db', import.meta.url);
+const databaseUrl = process.env.DATABASE_URL ?? 'file:./backend/weather.db';
+
+if (!databaseUrl.startsWith('file:')) {
+  console.log(`Refusing to remove non-file database URL: ${databaseUrl}`);
+  process.exit(0);
+}
+
+const databasePath = new URL(databaseUrl, `file://${process.cwd()}/`);
 
 await rm(databasePath, { force: true });
 await rm(new URL(`${databasePath.pathname}-shm`, databasePath), { force: true });

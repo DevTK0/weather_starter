@@ -1,9 +1,10 @@
-import { DatabaseSync } from 'node:sqlite';
 import { mkdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
+import { createClient } from '@libsql/client';
 import { and, desc, eq } from 'drizzle-orm';
-import { drizzle } from 'drizzle-orm/sqlite-proxy';
-import { migrate } from 'drizzle-orm/sqlite-proxy/migrator';
+import { drizzle } from 'drizzle-orm/libsql';
+import { migrate } from 'drizzle-orm/libsql/migrator';
+import { readServerConfig } from './config.js';
 import { locations, type WeatherSnapshot } from './schema.js';
 
 export interface LocationRecord {
@@ -37,22 +38,14 @@ const defaultWeather: WeatherSnapshot = {
   daily_forecast: [],
 };
 
-const databasePath = process.env.DATABASE_PATH ?? join(process.cwd(), 'backend', 'weather.db');
-mkdirSync(dirname(databasePath), { recursive: true });
+const databaseUrl = resolveDatabaseUrl();
+const client = createClient({
+  url: databaseUrl,
+  authToken: readServerConfig().databaseAuthToken,
+});
+const db = drizzle(client, { schema: { locations } });
 
-const sqlite = new DatabaseSync(databasePath);
-sqlite.exec('PRAGMA journal_mode = WAL');
-const db = drizzle(sqliteCallback, { schema: { locations } });
-await migrate(
-  db,
-  async (migrationQueries) => {
-    for (const query of migrationQueries) {
-      const trimmed = query.trim();
-      if (trimmed) sqlite.exec(trimmed);
-    }
-  },
-  { migrationsFolder: join(process.cwd(), 'backend', 'drizzle') },
-);
+await migrate(db, { migrationsFolder: join(process.cwd(), 'backend', 'drizzle') });
 
 export async function listLocations(): Promise<LocationRecord[]> {
   return (
@@ -111,7 +104,7 @@ export async function deleteLocation(id: number): Promise<boolean> {
 
 export async function resetStore(): Promise<void> {
   await db.delete(locations).run();
-  sqlite.prepare("DELETE FROM sqlite_sequence WHERE name = 'locations'").run();
+  await client.execute("DELETE FROM sqlite_sequence WHERE name = 'locations'");
 }
 
 function weatherToColumns(weather: WeatherSnapshot) {
@@ -166,24 +159,23 @@ function rowToRecord(row: LocationRow): LocationRecord {
   };
 }
 
-async function sqliteCallback(
-  sql: string,
-  params: unknown[],
-  method: 'run' | 'all' | 'values' | 'get',
-): Promise<{ rows: unknown[] }> {
-  const statement = sqlite.prepare(sql);
-  const bindings = params as never[];
-  if (method === 'run') {
-    statement.run(...bindings);
-    return { rows: [] };
+function resolveDatabaseUrl(): string {
+  const configuredUrl = readServerConfig().databaseUrl;
+  if (configuredUrl) {
+    prepareFileDatabaseDirectory(configuredUrl);
+    return configuredUrl;
   }
-  if (method === 'get') {
-    const row = statement.get(...bindings) as Record<string, unknown> | undefined;
-    return { rows: row ? Object.values(row) : (undefined as unknown as unknown[]) };
-  }
-  const rows = statement.all(...bindings) as Record<string, unknown>[];
-  if (method === 'values') {
-    return { rows: rows.map((row) => Object.values(row)) };
-  }
-  return { rows: rows.map((row) => Object.values(row)) };
+
+  const fallbackPath = join(process.cwd(), 'backend', 'weather.db');
+  mkdirSync(dirname(fallbackPath), { recursive: true });
+  return `file:${fallbackPath}`;
+}
+
+function prepareFileDatabaseDirectory(databaseUrl: string): void {
+  if (!databaseUrl.startsWith('file:')) return;
+
+  const databasePath = databaseUrl.slice('file:'.length);
+  if (!databasePath || databasePath === ':memory:') return;
+
+  mkdirSync(dirname(databasePath), { recursive: true });
 }

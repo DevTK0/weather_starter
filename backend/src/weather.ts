@@ -330,9 +330,7 @@ export class SingaporeWeatherClient {
     );
     const station = nearestStation(stations, latitude, longitude, valueByStation);
     return {
-      value: station
-        ? (valueByStation.get(station.id) ?? valueByStation.get(station.deviceId ?? '') ?? null)
-        : null,
+      value: station ? (valueByStation.get(station.id) ?? null) : null,
       timestamp: latestReading?.timestamp ?? null,
     };
   }

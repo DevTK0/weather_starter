@@ -2,7 +2,7 @@ import { mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import request from 'supertest';
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import type { WeatherSnapshot } from '../weather.js';
 
 const weather: WeatherSnapshot = {
@@ -29,13 +29,16 @@ const weather: WeatherSnapshot = {
 describe('locations API', () => {
   let tempDir: string;
   let app: Awaited<ReturnType<typeof import('../server.js').createApp>>;
+  let resetStore: typeof import('../db.js').resetStore;
 
   beforeAll(async () => {
     tempDir = await mkdtemp(join(tmpdir(), 'weather-starter-test-'));
-    process.env.DATABASE_PATH = join(tempDir, 'weather.db');
+    process.env.DATABASE_URL = `file:${join(tempDir, 'weather.db')}`;
+    delete process.env.DATABASE_AUTH_TOKEN;
     process.env.LOG_LEVEL = 'silent';
 
     const { createApp } = await import('../server.js');
+    ({ resetStore } = await import('../db.js'));
     app = await createApp({
       serveFrontend: false,
       enableRequestLogging: false,
@@ -45,6 +48,10 @@ describe('locations API', () => {
         },
       },
     });
+  });
+
+  beforeEach(async () => {
+    await resetStore();
   });
 
   afterAll(async () => {
@@ -71,5 +78,38 @@ describe('locations API', () => {
     const listResponse = await request(app).get('/api/locations').expect(200);
     expect(listResponse.body.locations).toHaveLength(1);
     expect(listResponse.body.locations[0].weather.condition).toBe('Cloudy');
+  });
+
+  it('prevents duplicate locations', async () => {
+    await request(app).post('/api/locations').send({ latitude: 1.35, longitude: 103.85 }).expect(201);
+
+    const response = await request(app)
+      .post('/api/locations')
+      .send({ latitude: 1.35, longitude: 103.85 })
+      .expect(409);
+
+    expect(response.body.detail).toBe('Location already exists');
+  });
+
+  it('gets and deletes a stored location', async () => {
+    const createResponse = await request(app)
+      .post('/api/locations')
+      .send({ latitude: 1.36, longitude: 103.86 })
+      .expect(201);
+
+    const locationId = createResponse.body.id;
+
+    const getResponse = await request(app).get(`/api/locations/${locationId}`).expect(200);
+    expect(getResponse.body).toMatchObject({
+      id: locationId,
+      latitude: 1.36,
+      longitude: 103.86,
+      weather: {
+        condition: 'Cloudy',
+      },
+    });
+
+    await request(app).delete(`/api/locations/${locationId}`).expect(204);
+    await request(app).get(`/api/locations/${locationId}`).expect(404);
   });
 });
