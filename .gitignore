@@ -29,6 +29,9 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
+# Local issue tracker
+.scratch/
+
 # Editors
 .vscode/
 .idea/

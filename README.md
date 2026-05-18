@@ -60,6 +60,24 @@ npm run db:generate # Generate Drizzle migrations after schema changes
 npm run db:migrate  # Apply Drizzle migrations to backend/weather.db
 ```
 
+## Configuration
+
+Copy `.env.example` to `.env` for local development. The deployment env contract is:
+
+| Variable              | Required for deploy | Description                                      |
+| --------------------- | ------------------- | ------------------------------------------------ |
+| `DATABASE_URL`        | Yes                 | Turso/libSQL database URL, such as `libsql://...` |
+| `DATABASE_AUTH_TOKEN` | Yes                 | Turso auth token for the database                 |
+| `WEATHER_API_KEY`     | Yes                 | data.gov.sg API key used by weather refreshes     |
+| `PORTLESS_PORT`       | No                  | Local Portless proxy port                         |
+| `PORTLESS_HTTPS`      | No                  | Enables HTTPS for the local Portless proxy        |
+
+For a single Vercel project deployment, set `DATABASE_URL`,
+`DATABASE_AUTH_TOKEN`, and `WEATHER_API_KEY` as project environment variables.
+The current local backend still uses the SQLite file until the Turso storage
+slice is implemented, but these names are the shared contract for the upcoming
+serverless backend.
+
 ## API
 
 | Method | Endpoint                     | Description                    |
