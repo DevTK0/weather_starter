@@ -25,6 +25,11 @@ export const themes: Record<string, ThemeDefinition> = {
     label: 'Jungle Green',
     description: 'Deep canopy greens with a lush, shadowy forest atmosphere.',
   },
+  oceanblue: {
+    id: 'oceanblue',
+    label: 'Ocean Blue',
+    description: 'Deep-sea blues fading into the midnight trench.',
+  },
 };
 
 export type ThemeId = keyof typeof themes;
