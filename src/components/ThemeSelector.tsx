@@ -65,9 +65,8 @@ export function ThemeSelector() {
                 }`}
               >
                 <span
-                  className={`mt-1 inline-block h-2 w-2 shrink-0 rounded-full ${
-                    isActive ? 'bg-white' : 'bg-white/30'
-                  }`}
+                  className="mt-1 inline-block h-2 w-2 shrink-0 rounded-full ring-1 ring-white/30"
+                  style={{ backgroundColor: def.swatch, opacity: isActive ? 1 : 0.6 }}
                 />
                 <span className="min-w-0 flex-1">
                   <span className="block text-sm font-semibold text-white">{def.label}</span>

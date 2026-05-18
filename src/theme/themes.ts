@@ -2,6 +2,7 @@ export interface ThemeDefinition {
   id: string;
   label: string;
   description: string;
+  swatch: string;
 }
 
 export const themes: Record<string, ThemeDefinition> = {
@@ -9,6 +10,13 @@ export const themes: Record<string, ThemeDefinition> = {
     id: 'apple',
     label: 'Apple',
     description: 'Frosted-glass dashboard, swipable locations, Voyager map.',
+    swatch: '#6f8aa8',
+  },
+  hotpink: {
+    id: 'hotpink',
+    label: 'Hot Pink',
+    description: 'Bold hot-pink gradient with frosted-glass cards.',
+    swatch: '#ff1493',
   },
 };
 
