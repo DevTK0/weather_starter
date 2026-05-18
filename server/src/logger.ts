@@ -1,20 +1,23 @@
 import { mkdirSync } from 'node:fs';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
 import pino from 'pino';
 
 const logPath = process.env.LOG_FILE_PATH ?? join(process.cwd(), 'server', 'logs', 'app.log');
+const shouldWriteLogFile = process.env.NODE_ENV !== 'test' && process.env.VERCEL !== '1';
 
-if (process.env.NODE_ENV !== 'test') {
-  mkdirSync(join(logPath, '..'), { recursive: true });
+if (shouldWriteLogFile) {
+  mkdirSync(dirname(logPath), { recursive: true });
 }
 
 const stream =
   process.env.NODE_ENV === 'test'
     ? undefined
-    : pino.multistream([
-        { stream: process.stdout },
-        { stream: pino.destination({ dest: logPath, sync: false }) },
-      ]);
+    : shouldWriteLogFile
+      ? pino.multistream([
+          { stream: process.stdout },
+          { stream: pino.destination({ dest: logPath, sync: false }) },
+        ])
+      : process.stdout;
 
 export const logger = pino(
   {
