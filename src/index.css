@@ -42,6 +42,30 @@ body {
 [data-theme='hotpink'] .text-white\/50 { color: rgb(0 0 0 / 0.50) !important; }
 [data-theme='hotpink'] .text-white\/40 { color: rgb(0 0 0 / 0.40) !important; }
 
+[data-theme='summeryellow'] body {
+  color: #000;
+  background:
+    radial-gradient(120% 80% at 60% 0%, rgba(255, 255, 200, 0.45) 0%, transparent 55%),
+    radial-gradient(80% 60% at 5% 100%, rgba(200, 120, 0, 0.45) 0%, transparent 60%),
+    linear-gradient(170deg, #f9d423 0%, #f5b800 30%, #e89c00 65%, #c97d00 100%);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+}
+
+/* Remap text-white/* → black equivalents for the summer yellow theme */
+[data-theme='summeryellow'] .text-white     { color: rgb(0 0 0 / var(--tw-text-opacity, 1)) !important; }
+[data-theme='summeryellow'] .text-white\/95 { color: rgb(0 0 0 / 0.95) !important; }
+[data-theme='summeryellow'] .text-white\/90 { color: rgb(0 0 0 / 0.90) !important; }
+[data-theme='summeryellow'] .text-white\/85 { color: rgb(0 0 0 / 0.85) !important; }
+[data-theme='summeryellow'] .text-white\/80 { color: rgb(0 0 0 / 0.80) !important; }
+[data-theme='summeryellow'] .text-white\/75 { color: rgb(0 0 0 / 0.75) !important; }
+[data-theme='summeryellow'] .text-white\/70 { color: rgb(0 0 0 / 0.70) !important; }
+[data-theme='summeryellow'] .text-white\/65 { color: rgb(0 0 0 / 0.65) !important; }
+[data-theme='summeryellow'] .text-white\/60 { color: rgb(0 0 0 / 0.60) !important; }
+[data-theme='summeryellow'] .text-white\/55 { color: rgb(0 0 0 / 0.55) !important; }
+[data-theme='summeryellow'] .text-white\/50 { color: rgb(0 0 0 / 0.50) !important; }
+[data-theme='summeryellow'] .text-white\/40 { color: rgb(0 0 0 / 0.40) !important; }
+
 [data-theme='oceanblue'] body {
   background:
     radial-gradient(120% 80% at 70% 0%, rgba(180, 230, 255, 0.22) 0%, transparent 50%),

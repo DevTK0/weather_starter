@@ -30,6 +30,11 @@ export const themes: Record<string, ThemeDefinition> = {
     label: 'Ocean Blue',
     description: 'Deep-sea blues fading into the midnight trench.',
   },
+  summeryellow: {
+    id: 'summeryellow',
+    label: 'Summer Yellow',
+    description: 'Warm golden sunshine with a hazy afternoon glow.',
+  },
 };
 
 export type ThemeId = keyof typeof themes;
